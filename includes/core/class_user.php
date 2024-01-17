@@ -132,35 +132,60 @@ class User {
         $phone = isset($d['phone']) ? phone_formatting($d['phone']) : 0;
         $email = isset($d['email']) ? strtolower($d['email']) : '';
         $offset = isset($d['offset']) ? preg_replace('~\D+~', '', $d['offset']) : 0;
-    
-        // update
-        if ($user_id) {
-            $set = [];
-            $set[] = "plot_id='".$plot_ids."'";
-            $set[] = "first_name='".$first_name."'";
-            $set[] = "last_name='".$last_name."'";
-            $set[] = "phone='".$phone."'";
-            $set[] = "email='".$email."'";
-            $set = implode(", ", $set);
-    
-            DB::query("UPDATE users SET ".$set." WHERE user_id='".$user_id."' LIMIT 1;") or die (DB::error());
-        } else {
-            DB::query("INSERT INTO users (
-                plot_id,
-                first_name,
-                last_name,
-                phone,
-                email
 
-            ) VALUES (
-                '".$plot_ids."',
-                '".$first_name."',
-                '".$last_name."',
-                '".phone_formatting($phone)."',
-                '".strtolower($email)."'
-            );") or die (DB::error());
+
+        // error (empty first_name)
+        if (empty($first_name)) {
+            return error_response(2003, 'First name is missing or in the wrong format.', ['first_name' => 'empty or invalid']);
         }
-        // output
-        return User::users_fetch(['offset' => $offset]);
+
+        // error (empty last_name)
+        if (empty($last_name)) {
+            return error_response(2004, 'Last name is missing or in the wrong format.', ['last_name' => 'empty or invalid']);
+        }
+
+        // error (empty phone)
+        if (!$phone) {
+            return error_response(2005, 'Phone number is missing or in the wrong format.', ['phone' => 'empty or invalid']);
+        }
+
+        // error (empty email)
+        if (empty($email)) {
+            return error_response(2006, 'Email is missing or in the wrong format.', ['email' => 'empty or invalid']);
+        }
+
+        // update
+        try {
+            if ($user_id) {
+                $set = [];
+                $set[] = "plot_id='".$plot_ids."'";
+                $set[] = "first_name='".$first_name."'";
+                $set[] = "last_name='".$last_name."'";
+                $set[] = "phone='".$phone."'";
+                $set[] = "email='".$email."'";
+                $set = implode(", ", $set);
+
+                DB::query("UPDATE users SET ".$set." WHERE user_id='".$user_id."' LIMIT 1;");
+            } else {
+                DB::query("INSERT INTO users (
+                    plot_id,
+                    first_name,
+                    last_name,
+                    phone,
+                    email
+                ) VALUES (
+                    '".$plot_ids."',
+                    '".$first_name."',
+                    '".$last_name."',
+                    '".phone_formatting($phone)."',
+                    '".strtolower($email)."'
+                );");
+            }
+            // output
+            return User::users_fetch(['offset' => $offset]);
+        } catch (Exception $e) {
+            // error (database query)
+            return error_response(2007, 'Error updating or inserting user data.', ['database' => $e->getMessage()]);
+        }
     }
 }

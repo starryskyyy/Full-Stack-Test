@@ -189,8 +189,13 @@ let common = {
         let location = { dpt: 'user', act: 'edit_update' };
         // call
         request({ location: location, data: data }, (result) => {
-            common.modal_hide();
-            html('table', result.html);
+            if (result.error_msg) {
+                html('user_error', result.error_msg);
+            } else{
+                common.modal_hide();
+                html('table', result.html);
+            }
+            
         });
     },
 
