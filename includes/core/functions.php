@@ -61,6 +61,7 @@ function error_response($code, $msg, $data = []) {
     return $result;
 }
 
+
 function dump($data = []) {
     if (is_array($data)) $data = json_encode($data, JSON_UNESCAPED_UNICODE);
     error_log($data);

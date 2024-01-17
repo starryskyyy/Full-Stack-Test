@@ -160,6 +160,8 @@ let common = {
 
     //users
 
+    
+
     user_edit_window: (user_id, e) => {
         // actions
         cancel_event(e);
@@ -192,6 +194,10 @@ let common = {
         });
     },
 
+     processPlotIds: (plotIds) => {
+        // split the comma-separated string and join with a space
+        return plotIds.split(',').join(' ');
+    }
 }
 
 add_event(document, 'DOMContentLoaded', common.init);

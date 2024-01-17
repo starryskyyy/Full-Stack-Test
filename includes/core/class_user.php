@@ -71,7 +71,7 @@ class User {
         while ($row = DB::fetch_row($q)) {
             $items[] = [
                 'id' => (int) $row['user_id'],
-                'plot_id' => (int) $row['plot_id'],
+                'plot_id' => $row['plot_id'],
                 'first_name' => $row['first_name'],
                 'last_name' => $row['last_name'],
                 'phone' => beautify_phone_number($row['phone']),
@@ -125,21 +125,24 @@ class User {
     public static function user_edit_update($d = []) {
         // vars
         $user_id = isset($d['user_id']) && is_numeric($d['user_id']) ? $d['user_id'] : 0;
-        $plot_id = isset($d['plot_id']) && is_numeric($d['plot_id']) ? $d['plot_id'] : 0;
+        $plot_ids = isset($d['plot_id']) ? $d['plot_id'] : '';
+        $plot_ids = implode(',', array_map('trim', explode(',', $plot_ids))); // Ensure clean formatting
         $first_name = isset($d['first_name']) && ucwords(strtolower($d['first_name'])) ? $d['first_name'] : '';
         $last_name = isset($d['last_name']) && ucwords(strtolower($d['last_name'])) ? $d['last_name'] : '';
         $phone = isset($d['phone']) ? phone_formatting($d['phone']) : 0;
         $email = isset($d['email']) ? strtolower($d['email']) : '';
         $offset = isset($d['offset']) ? preg_replace('~\D+~', '', $d['offset']) : 0;
+    
         // update
         if ($user_id) {
             $set = [];
-            $set[] = "plot_id='".$plot_id."'";
+            $set[] = "plot_id='".$plot_ids."'";
             $set[] = "first_name='".$first_name."'";
             $set[] = "last_name='".$last_name."'";
             $set[] = "phone='".$phone."'";
             $set[] = "email='".$email."'";
             $set = implode(", ", $set);
+    
             DB::query("UPDATE users SET ".$set." WHERE user_id='".$user_id."' LIMIT 1;") or die (DB::error());
         } else {
             DB::query("INSERT INTO users (
@@ -150,11 +153,11 @@ class User {
                 email
 
             ) VALUES (
-                '".$plot_id."',
+                '".$plot_ids."',
                 '".$first_name."',
                 '".$last_name."',
-                '".$phone."',
-                '".$email."'
+                '".phone_formatting($phone)."',
+                '".strtolower($email)."'
             );") or die (DB::error());
         }
         // output
