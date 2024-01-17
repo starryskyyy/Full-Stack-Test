@@ -3,7 +3,32 @@
 class User {
 
     // GENERAL
-
+    public static function get_user($user_id) {
+        
+        // info
+        $q = DB::query("SELECT user_id, plot_id, first_name, last_name, phone, email
+            FROM users WHERE user_id='".$user_id."' LIMIT 1;") or die (DB::error());
+        if ($row = DB::fetch_row($q)) {
+            return [
+                'id' => (int)$row['user_id'],
+                'plot_id' => $row['plot_id'],
+                'first_name' => $row['first_name'],
+                'last_name' => $row['last_name'],
+                'phone' => $row['phone'],
+                'email' => $row['email']
+            ];
+        } else {
+            return [
+                'id' => 0,
+                'plot_id' => '',
+                'first_name' => '',
+                'last_name' => '',
+                'phone' => 0,
+                'email' => ''
+            ];
+        }
+    }
+    
     public static function user_info($d) {
         // vars
         $user_id = isset($d['user_id']) && is_numeric($d['user_id']) ? $d['user_id'] : 0;
@@ -26,6 +51,7 @@ class User {
             ];
         }
     }
+    
 
     public static function users_list($d = []) {
         // vars
@@ -36,7 +62,7 @@ class User {
         // where
         $where = [];
         if ($search) {
-            $where[] = "(phone LIKE '%".remove_phone_formatting($search)."%' OR first_name LIKE '%".ucwords(strtolower($search))."%' OR email LIKE '%".strtolower($search)."%')";
+            $where[] = "(phone LIKE '%".$search."%' OR first_name LIKE '%".$search."%' OR email LIKE '%".$search."%')";
         }
         $where = $where ? "WHERE ".implode(" AND ", $where) : "";
         // info
@@ -91,7 +117,46 @@ class User {
 
     public static function user_edit_window($d = []) {
         $user_id = isset($d['user_id']) && is_numeric($d['user_id']) ? $d['user_id'] : 0;
-        HTML::assign('user', User::user_info($user_id ));
-        return ['html' => HTML::fetch('./partials/plot_edit.html')];
+        HTML::assign('user', User::get_user($user_id));
+        HTML::assign('isEditMode', $user_id > 0); // set a flag for edit mode
+        return ['html' => HTML::fetch('./partials/user_edit.html')];
+    }
+
+    public static function user_edit_update($d = []) {
+        // vars
+        $user_id = isset($d['user_id']) && is_numeric($d['user_id']) ? $d['user_id'] : 0;
+        $plot_id = isset($d['plot_id']) && is_numeric($d['plot_id']) ? $d['plot_id'] : 0;
+        $first_name = isset($d['first_name']) && ucwords(strtolower($d['first_name'])) ? $d['first_name'] : '';
+        $last_name = isset($d['last_name']) && ucwords(strtolower($d['last_name'])) ? $d['last_name'] : '';
+        $phone = isset($d['phone']) ? phone_formatting($d['phone']) : 0;
+        $email = isset($d['email']) ? strtolower($d['email']) : '';
+        $offset = isset($d['offset']) ? preg_replace('~\D+~', '', $d['offset']) : 0;
+        // update
+        if ($user_id) {
+            $set = [];
+            $set[] = "plot_id='".$plot_id."'";
+            $set[] = "first_name='".$first_name."'";
+            $set[] = "last_name='".$last_name."'";
+            $set[] = "phone='".$phone."'";
+            $set[] = "email='".$email."'";
+            DB::query("UPDATE users SET ".$set." WHERE user_id='".$user_id."' LIMIT 1;") or die (DB::error());
+        } else {
+            DB::query("INSERT INTO users (
+                plot_id,
+                first_name,
+                last_name,
+                phone,
+                email,
+
+            ) VALUES (
+                '".$plot_id."',
+                '".$first_name."',
+                '".$last_name."',
+                '".$phone."',
+                '".$email."',
+            );") or die (DB::error());
+        }
+        // output
+        return User::users_fetch(['offset' => $offset]);
     }
 }
