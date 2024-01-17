@@ -66,10 +66,11 @@ class User {
         }
         $where = $where ? "WHERE ".implode(" AND ", $where) : "";
         // info
-        $q = DB::query("SELECT plot_id, first_name, last_name, phone, email, last_login
+        $q = DB::query("SELECT user_id, plot_id, first_name, last_name, phone, email, last_login
                         FROM users ".$where." ORDER BY CAST(plot_id AS SIGNED) ASC LIMIT ".$offset.", ".$limit.";") or die (DB::error());
         while ($row = DB::fetch_row($q)) {
             $items[] = [
+                'id' => (int) $row['user_id'],
                 'plot_id' => (int) $row['plot_id'],
                 'first_name' => $row['first_name'],
                 'last_name' => $row['last_name'],
@@ -118,7 +119,6 @@ class User {
     public static function user_edit_window($d = []) {
         $user_id = isset($d['user_id']) && is_numeric($d['user_id']) ? $d['user_id'] : 0;
         HTML::assign('user', User::get_user($user_id));
-        HTML::assign('isEditMode', $user_id > 0); // set a flag for edit mode
         return ['html' => HTML::fetch('./partials/user_edit.html')];
     }
 
@@ -139,6 +139,7 @@ class User {
             $set[] = "last_name='".$last_name."'";
             $set[] = "phone='".$phone."'";
             $set[] = "email='".$email."'";
+            $set = implode(", ", $set);
             DB::query("UPDATE users SET ".$set." WHERE user_id='".$user_id."' LIMIT 1;") or die (DB::error());
         } else {
             DB::query("INSERT INTO users (

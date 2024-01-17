@@ -160,7 +160,7 @@ let common = {
 
     //users
 
-    user_edit_window: (user_id, isEditMode = true, e) => {
+    user_edit_window: (user_id, e) => {
         // actions
         cancel_event(e);
         common.menu_popup_hide_all('all');
