@@ -72,10 +72,6 @@ function phone_formatting($phone) {
     return $phone;
 }
 
-function remove_phone_formatting($phone) {
-    return preg_replace('/[^0-9]/', '', $phone);
-}
-
 function beautify_phone_number($phoneNumber) {
 
     // Format as +9 (000) 000-0000

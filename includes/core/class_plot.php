@@ -138,7 +138,7 @@ class Plot {
         $offset = isset($d['offset']) ? preg_replace('~\D+~', '', $d['offset']) : 0;
         
         try {
-            // deletion from the database
+            // delete from the database
             DB::query("DELETE FROM plots WHERE plot_id='".$plot_id."' LIMIT 1;");
             // output
             return Plot::plots_fetch(['offset' => $offset]);

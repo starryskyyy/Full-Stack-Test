@@ -167,6 +167,7 @@ class User {
 
                 DB::query("UPDATE users SET ".$set." WHERE user_id='".$user_id."' LIMIT 1;");
             } else {
+                // add user 
                 DB::query("INSERT INTO users (
                     plot_id,
                     first_name,
@@ -177,7 +178,7 @@ class User {
                     '".$plot_ids."',
                     '".$first_name."',
                     '".$last_name."',
-                    '".phone_formatting($phone)."',
+                    '".$phone."',
                     '".strtolower($email)."'
                 );");
             }
@@ -195,13 +196,12 @@ class User {
         $offset = isset($d['offset']) ? preg_replace('~\D+~', '', $d['offset']) : 0;
         
         try {
-            // Perform the deletion from the database
+            // delete from the database
             DB::query("DELETE FROM users WHERE user_id='".$user_id."' LIMIT 1;");
-            // Output a success message or updated user data
             // output
             return User::users_fetch(['offset' => $offset]);
         } catch (Exception $e) {
-            // Return an error message in case of failure
+            // return an error message in case of failure
             return ['errors' => ['database' => 'Error deleting user.', 'message' => $e->getMessage()]];
         }
     }
