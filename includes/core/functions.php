@@ -71,6 +71,14 @@ function phone_formatting($phone) {
     return $phone;
 }
 
+function beautify_phone_number($phoneNumber) {
+
+    // Format as +9 (000) 000-0000
+    return '+' . substr($phoneNumber, 0, 1) . ' (' . substr($phoneNumber, 1, 3) . ') ' .
+        substr($phoneNumber, 4, 3) . '-' . substr($phoneNumber, 7);
+}
+
+
 function paginator($total, $offset, $q, $path, &$out) {
     if ($total > $q) {
         $m = 0;

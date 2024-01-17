@@ -27,6 +27,39 @@ class User {
         }
     }
 
+    public static function users_list($d = []) {
+        // vars
+        $search = isset($d['search']) && trim($d['search']) ? $d['search'] : '';
+        $offset = isset($d['offset']) && is_numeric($d['offset']) ? $d['offset'] : 0;
+        $limit = 20;
+        $items = [];
+        // where
+        $where = [];
+        if ($search) $where[] = "number LIKE '%".$search."%'";
+        $where = $where ? "WHERE ".implode(" AND ", $where) : "";
+        // info
+        $q = DB::query("SELECT plot_id, first_name, last_name, phone, email, last_login
+                        FROM users ".$where." ORDER BY CAST(plot_id AS SIGNED) ASC LIMIT ".$offset.", ".$limit.";") or die (DB::error());
+        while ($row = DB::fetch_row($q)) {
+            $items[] = [
+                'plot_id' => (int) $row['plot_id'],
+                'first_name' => $row['first_name'],
+                'last_name' => $row['last_name'],
+                'phone' => beautify_phone_number($row['phone']),
+                'email' => strtolower($row['email']),
+                'last_login' => date('Y/m/d H:i:s', $row['last_login'])
+            ];
+        }
+        // paginator
+        $q = DB::query("SELECT count(*) FROM users ".$where.";");
+        $count = ($row = DB::fetch_row($q)) ? $row['count(*)'] : 0;
+        $url = 'users?';
+        if ($search) $url .= '&search='.$search;
+        paginator($count, $offset, $limit, $url, $paginator);
+        // output
+        return ['items' => $items, 'paginator' => $paginator];
+    }
+
     public static function users_list_plots($number) {
         // vars
         $items = [];
@@ -48,4 +81,9 @@ class User {
         return $items;
     }
 
+    public static function user_edit_window($d = []) {
+        $user_id = isset($d['user_id']) && is_numeric($d['user_id']) ? $d['user_id'] : 0;
+        HTML::assign('user', User::user_info($user_id ));
+        return ['html' => HTML::fetch('./partials/plot_edit.html')];
+    }
 }
