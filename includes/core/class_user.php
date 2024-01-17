@@ -35,7 +35,9 @@ class User {
         $items = [];
         // where
         $where = [];
-        if ($search) $where[] = "number LIKE '%".$search."%'";
+        if ($search) {
+            $where[] = "(phone LIKE '%".remove_phone_formatting($search)."%' OR first_name LIKE '%".ucwords(strtolower($search))."%' OR email LIKE '%".strtolower($search)."%')";
+        }
         $where = $where ? "WHERE ".implode(" AND ", $where) : "";
         // info
         $q = DB::query("SELECT plot_id, first_name, last_name, phone, email, last_login
@@ -79,6 +81,12 @@ class User {
         }
         // output
         return $items;
+    }
+
+    public static function users_fetch($d = []) {
+        $info = User::users_list($d);
+        HTML::assign('users', $info['items']);
+        return ['html' => HTML::fetch('./partials/users_table.html'), 'paginator' => $info['paginator']];
     }
 
     public static function user_edit_window($d = []) {
