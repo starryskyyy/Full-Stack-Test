@@ -146,14 +146,14 @@ class User {
                 first_name,
                 last_name,
                 phone,
-                email,
+                email
 
             ) VALUES (
                 '".$plot_id."',
                 '".$first_name."',
                 '".$last_name."',
                 '".$phone."',
-                '".$email."',
+                '".$email."'
             );") or die (DB::error());
         }
         // output

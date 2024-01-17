@@ -12,7 +12,17 @@
     <script type="text/javascript" src="/js/lib/common.js?1"></script>
     <script type="text/javascript" src="/js/common.js?1"></script>
     <!-- Global Vars -->
-    
+    <script type="text/javascript">
+        var global = {literal}{{/literal}
+            {if $global.path == 'users' }
+                offset: {$offset}
+            {/if}
+            {if $global.path == 'plots' }
+                offset: {$offset}
+            {/if}
+            
+        {literal}}{/literal}
+    </script>
 </head>
 <body>
     {if isset($main_content)}

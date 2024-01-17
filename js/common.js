@@ -177,7 +177,7 @@ let common = {
         // vars
         let data = {
             user_id: user_id,
-            plots: gv('plots'),
+            plot_id: gv('plot_id'),
             first_name: gv('first_name'),
             last_name: gv('last_name'),
             phone: gv('phone'),
@@ -191,7 +191,6 @@ let common = {
             html('table', result.html);
         });
     },
-
 
 }
 
