@@ -158,9 +158,21 @@ let common = {
         });
     },
 
-    //users
+    plot_delete: (plot_id) => {
+        // vars
+        let data = {
+            plot_id: plot_id
+        };
+        let location = { dpt: 'plot', act: 'delete' };
 
-    
+        // call
+        request({ location, data }, (result) => {
+            common.modal_hide();
+            html('table', result.html);
+        });
+    },
+
+    //users
 
     user_edit_window: (user_id, e) => {
         // actions
@@ -191,17 +203,26 @@ let common = {
         request({ location: location, data: data }, (result) => {
             if (result.error_msg) {
                 html('user_error', result.error_msg);
-            } else{
+            } else {
                 common.modal_hide();
                 html('table', result.html);
             }
-            
+
         });
     },
 
-     processPlotIds: (plotIds) => {
-        // split the comma-separated string and join with a space
-        return plotIds.split(',').join(' ');
+    user_delete: (user_id) => {
+        // vars
+        let data = {
+            user_id: user_id
+        };
+        let location = { dpt: 'user', act: 'delete' };
+
+        // call
+        request({ location, data }, (result) => {
+            common.modal_hide();
+            html('table', result.html);
+        });
     }
 }
 

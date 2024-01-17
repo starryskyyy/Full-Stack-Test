@@ -188,4 +188,22 @@ class User {
             return error_response(2007, 'Error updating or inserting user data.', ['database' => $e->getMessage()]);
         }
     }
+
+    public static function user_delete($d = []) {
+
+        $user_id = isset($d['user_id']) && is_numeric($d['user_id']) ? $d['user_id'] : 0;
+        $offset = isset($d['offset']) ? preg_replace('~\D+~', '', $d['offset']) : 0;
+        
+        try {
+            // Perform the deletion from the database
+            DB::query("DELETE FROM users WHERE user_id='".$user_id."' LIMIT 1;");
+            // Output a success message or updated user data
+            // output
+            return User::users_fetch(['offset' => $offset]);
+        } catch (Exception $e) {
+            // Return an error message in case of failure
+            return ['errors' => ['database' => 'Error deleting user.', 'message' => $e->getMessage()]];
+        }
+    }
+    
 }

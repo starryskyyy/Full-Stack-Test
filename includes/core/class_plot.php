@@ -132,4 +132,20 @@ class Plot {
         return 'Free';
     }
 
+    public static function plot_delete($d = []) {
+
+        $plot_id = isset($d['plot_id']) && is_numeric($d['plot_id']) ? $d['plot_id'] : 0;
+        $offset = isset($d['offset']) ? preg_replace('~\D+~', '', $d['offset']) : 0;
+        
+        try {
+            // deletion from the database
+            DB::query("DELETE FROM plots WHERE plot_id='".$plot_id."' LIMIT 1;");
+            // output
+            return Plot::plots_fetch(['offset' => $offset]);
+        } catch (Exception $e) {
+            // return an error message in case of failure
+            return ['errors' => ['database' => 'Error deleting user.', 'message' => $e->getMessage()]];
+        }
+    }
+
 }
