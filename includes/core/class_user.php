@@ -134,10 +134,10 @@ class User {
         $offset = isset($d['offset']) ? preg_replace('~\D+~', '', $d['offset']) : 0;
 
         // formatting
-        phone_formatting($phone);
-        ucwords(strtolower($first_name));
-        ucwords(strtolower($last_name));
-        strtolower($email);
+        $phone =phone_formatting($phone);
+        $first_name = ucwords(strtolower($first_name));
+        $last_name =  ucwords(strtolower($last_name));
+        $email = strtolower($email);
 
         // error (empty first_name)
         if (empty($first_name)) {
