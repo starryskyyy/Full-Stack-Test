@@ -129,10 +129,12 @@ class User {
         $plot_ids = implode(',', array_map('trim', explode(',', $plot_ids))); // Ensure clean formatting
         $first_name = isset($d['first_name']) && ucwords(strtolower($d['first_name'])) ? $d['first_name'] : '';
         $last_name = isset($d['last_name']) && ucwords(strtolower($d['last_name'])) ? $d['last_name'] : '';
-        $phone = isset($d['phone']) ? phone_formatting($d['phone']) : 0;
+        $phone = isset($d['phone']) ? $d['phone'] : 0;
         $email = isset($d['email']) ? strtolower($d['email']) : '';
         $offset = isset($d['offset']) ? preg_replace('~\D+~', '', $d['offset']) : 0;
 
+
+        phone_formatting($phone);
 
         // error (empty first_name)
         if (empty($first_name)) {
