@@ -126,15 +126,18 @@ class User {
         // vars
         $user_id = isset($d['user_id']) && is_numeric($d['user_id']) ? $d['user_id'] : 0;
         $plot_ids = isset($d['plot_id']) ? $d['plot_id'] : '';
-        $plot_ids = implode(',', array_map('trim', explode(',', $plot_ids))); // Ensure clean formatting
-        $first_name = isset($d['first_name']) && ucwords(strtolower($d['first_name'])) ? $d['first_name'] : '';
-        $last_name = isset($d['last_name']) && ucwords(strtolower($d['last_name'])) ? $d['last_name'] : '';
+        $plot_ids = implode(',', array_map('trim', explode(',', $plot_ids))); // comma-separated formatting
+        $first_name = isset($d['first_name']) && $d['first_name'] ? $d['first_name'] : '';
+        $last_name = isset($d['last_name']) && $d['last_name'] ? $d['last_name'] : '';
         $phone = isset($d['phone']) ? $d['phone'] : 0;
-        $email = isset($d['email']) ? strtolower($d['email']) : '';
+        $email = isset($d['email']) ? $d['email'] : '';
         $offset = isset($d['offset']) ? preg_replace('~\D+~', '', $d['offset']) : 0;
 
-
+        // formatting
         phone_formatting($phone);
+        ucwords(strtolower($first_name));
+        ucwords(strtolower($last_name));
+        strtolower($email);
 
         // error (empty first_name)
         if (empty($first_name)) {
